@@ -5,6 +5,8 @@ export class Line {
     public readonly sectionId: string,
     public text: string,
     public readonly lineIndex: number,
+    public moraCount?: number,
+    public rhymeTail?: string,
     public readonly createdAt: Date = new Date(),
     public updatedAt: Date = new Date()
   ) {}
@@ -20,6 +22,8 @@ export class Line {
       sectionId,
       text,
       lineIndex,
+      undefined,
+      undefined,
       now,
       now
     );

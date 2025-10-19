@@ -199,12 +199,14 @@ describe('Line', () => {
   describe('constructor', () => {
     it('直接constructorで正常な行を作成できる', () => {
       const now = new Date();
-      const line = new Line('test-id', testSectionId, 'テスト歌詞', 5, now, now);
+      const line = new Line('test-id', testSectionId, 'テスト歌詞', 5, undefined, undefined, now, now);
 
       expect(line.id).toBe('test-id');
       expect(line.sectionId).toBe(testSectionId);
       expect(line.text).toBe('テスト歌詞');
       expect(line.lineIndex).toBe(5);
+      expect(line.moraCount).toBeUndefined();
+      expect(line.rhymeTail).toBeUndefined();
       expect(line.createdAt).toBe(now);
       expect(line.updatedAt).toBe(now);
     });

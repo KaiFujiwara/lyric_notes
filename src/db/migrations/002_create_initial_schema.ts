@@ -8,8 +8,8 @@ const migration = {
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL CHECK(length(name) >= 1 AND length(name) <= 100),
     order_index INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
   )`,
 
   // ジャンルテーブル
@@ -18,8 +18,8 @@ const migration = {
     name TEXT NOT NULL CHECK(length(name) >= 1 AND length(name) <= 50),
     template_sections TEXT NOT NULL DEFAULT '[]',
     is_preset INTEGER NOT NULL DEFAULT 0 CHECK(is_preset IN (0, 1)),
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
   )`,
 
   // タグテーブル
@@ -27,8 +27,8 @@ const migration = {
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL CHECK(length(name) >= 1 AND length(name) <= 30),
     color TEXT CHECK(color IS NULL OR (color GLOB '#[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]' OR color GLOB '#[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]')),
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
   )`,
 
   // プロジェクトテーブル
@@ -37,8 +37,8 @@ const migration = {
     title TEXT NOT NULL CHECK(length(title) >= 1 AND length(title) <= 200),
     folder_id TEXT,
     genre_id TEXT,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
     is_deleted INTEGER NOT NULL DEFAULT 0 CHECK(is_deleted IN (0, 1)),
     FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL,
     FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE SET NULL
@@ -50,8 +50,8 @@ const migration = {
     project_id TEXT NOT NULL,
     name TEXT NOT NULL CHECK(length(name) >= 1 AND length(name) <= 50),
     order_index INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
   )`,
 
@@ -61,8 +61,8 @@ const migration = {
     section_id TEXT NOT NULL,
     text TEXT NOT NULL DEFAULT '',
     line_index INTEGER NOT NULL,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
     FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE
   )`,
 
@@ -70,15 +70,15 @@ const migration = {
   `CREATE TABLE IF NOT EXISTS phrases (
     id TEXT PRIMARY KEY,
     text TEXT NOT NULL CHECK(length(text) >= 1 AND length(text) <= 500),
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
   )`,
 
   // プロジェクト-タグ中間テーブル
   `CREATE TABLE IF NOT EXISTS project_tags (
     project_id TEXT NOT NULL,
     tag_id TEXT NOT NULL,
-    created_at TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
     PRIMARY KEY (project_id, tag_id),
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
     FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
@@ -88,7 +88,7 @@ const migration = {
   `CREATE TABLE IF NOT EXISTS phrase_tags (
     phrase_id TEXT NOT NULL,
     tag_id TEXT NOT NULL,
-    created_at TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
     PRIMARY KEY (phrase_id, tag_id),
     FOREIGN KEY (phrase_id) REFERENCES phrases(id) ON DELETE CASCADE,
     FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE

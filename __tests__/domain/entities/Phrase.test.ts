@@ -97,16 +97,17 @@ describe('Phrase', () => {
   describe('constructor', () => {
     it('直接constructorを呼ぶ場合もテキストバリデーションが働く', () => {
       expect(() => {
-        new Phrase('test-id', '', new Date(), new Date());
+        new Phrase('test-id', '', undefined, new Date(), new Date());
       }).toThrow('フレーズを入力してください');
     });
 
     it('直接constructorで正常なフレーズを作成できる', () => {
       const now = new Date();
-      const phrase = new Phrase('test-id', 'テストフレーズ', now, now);
+      const phrase = new Phrase('test-id', 'テストフレーズ', undefined, now, now);
 
       expect(phrase.id).toBe('test-id');
       expect(phrase.text).toBe('テストフレーズ');
+      expect(phrase.note).toBeUndefined();
       expect(phrase.createdAt).toBe(now);
       expect(phrase.updatedAt).toBe(now);
     });

@@ -6,4 +6,8 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(expo-sqlite|expo-constants|expo-.*)/)'
+  ],
+  setupFilesAfterEnv: ['<rootDir>/__tests__/setup.ts'],
 };
