@@ -16,6 +16,7 @@
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
+    "base-64": "^1.0.0",
     "expo": "54.0.13",
     "expo-constants": "~18.0.9",
     "expo-file-system": "~19.0.17",
@@ -44,6 +45,7 @@
   },
   "devDependencies": {
     "@expo/config-types": "^54.0.8",
+    "@types/base-64": "^1.0.2",
     "@types/better-sqlite3": "^7.6.13",
     "@types/jest": "^30.0.0",
     "@types/react": "~19.1.0",
