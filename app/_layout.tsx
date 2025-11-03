@@ -1,9 +1,11 @@
-import { Tabs } from "expo-router";
+import { Stack } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { initializeDatabase, isDatabaseReady, getInitializationError } from "@/src/db/runtime";
+import { forceDeleteDatabaseBeforeInit } from "@/src/db/dev-utils";
 import { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
+import "../global.css";
 
 // スプラッシュスクリーンを表示し続ける
 SplashScreen.preventAutoHideAsync();
@@ -16,6 +18,13 @@ function AppContent() {
   const initializeApp = async () => {
     try {
       setError(null);
+
+      // TEMPORARY: 開発環境でのみ、DB接続前にファイルを完全削除
+      // TODO: スキーマが安定したら削除すること
+      if (__DEV__) {
+        await forceDeleteDatabaseBeforeInit();
+      }
+
       await initializeDatabase();
       setIsReady(true);
     } catch (err) {
@@ -81,52 +90,14 @@ function AppContent() {
   }
 
   return (
-    <Tabs
+    <Stack
       screenOptions={{
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#8E8E93',
         headerShown: false,
-        lazy: true, // 遅延マウントで初回負荷軽減
-        freezeOnBlur: true, // タブ外のツリーを停止して省エネ
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: '歌詞',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="library-music" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="phrases"
-        options={{
-          title: 'フレーズ',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="format-quote" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="tags"
-        options={{
-          title: 'タグ',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="label" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: '設定',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="settings" size={size} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(tabs)" />
+    </Stack>
   );
 }
 

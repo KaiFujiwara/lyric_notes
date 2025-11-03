@@ -14,11 +14,11 @@ interface ExpoFileSystemType {
 }
 
 // スナップショット保存先ディレクトリを動的に取得
-const getSnapshotsDir = () => {
+const getSnapshotsDir = (): string | null => {
   const fs = FileSystem as unknown as ExpoFileSystemType;
   const docDir = fs.documentDirectory;
   if (!docDir) {
-    throw new Error('Document directory is not available');
+    return null;
   }
   return `${docDir}db_snapshots/`;
 };
@@ -64,9 +64,12 @@ export async function createSnapshot(label: string = 'auto'): Promise<string> {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const filename = `${sanitizedLabel}_${timestamp}.json`;
 
-  try {
-    const SNAPSHOTS_DIR = getSnapshotsDir();
+  const SNAPSHOTS_DIR = getSnapshotsDir();
+  if (!SNAPSHOTS_DIR) {
+    throw new Error('Document directory is not available');
+  }
 
+  try {
     // ディレクトリ作成
     const fs = FileSystem as unknown as ExpoFileSystemType;
     await fs.makeDirectoryAsync(SNAPSHOTS_DIR, { intermediates: true });
@@ -150,6 +153,9 @@ export async function createSnapshot(label: string = 'auto'): Promise<string> {
 export async function getSnapshots(): Promise<string[]> {
   try {
     const SNAPSHOTS_DIR = getSnapshotsDir();
+    if (!SNAPSHOTS_DIR) {
+      return [];
+    }
     const fs = FileSystem as unknown as ExpoFileSystemType;
 
     const info = await fs.getInfoAsync(SNAPSHOTS_DIR);
@@ -174,6 +180,9 @@ export async function getSnapshots(): Promise<string[]> {
 export async function rotateSnapshots(keepCount: number = 3): Promise<void> {
   try {
     const SNAPSHOTS_DIR = getSnapshotsDir();
+    if (!SNAPSHOTS_DIR) {
+      return;
+    }
     const snapshots = await getSnapshots();
     const fs = FileSystem as unknown as ExpoFileSystemType;
 

@@ -1,46 +1,40 @@
 // 開発用のデータベースユーティリティ
 
 import { sqliteDataSource } from './datasources/sqlite';
+import * as SQLite from 'expo-sqlite';
+import Constants from 'expo-constants';
+
+// 環境別データベース名取得（datasources/sqlite.tsと同じロジック）
+function getDatabaseName(): string {
+  const env = Constants.expoConfig?.extra?.APP_ENV || (__DEV__ ? 'dev' : 'prod');
+  return `lyrics_notes.${env}.db`;
+}
 
 /**
- * 開発用: データベースを完全にクリア
- * 全てのテーブルを削除して初期状態に戻す
+ * データベースファイルを完全削除（接続前に実行）
+ * IMPORTANT: initializeDatabase()より前に呼ぶこと
  */
-export async function clearDatabase(): Promise<void> {
+export async function forceDeleteDatabaseBeforeInit(): Promise<void> {
   if (!__DEV__) {
-    console.warn('clearDatabase() is only available in development mode');
+    console.warn('forceDeleteDatabaseBeforeInit() is only available in development mode');
     return;
   }
 
-  const db = await sqliteDataSource.getDatabase();
-
-  console.log('🗑️  Clearing database...');
-
   try {
-    await db.withTransactionAsync(async () => {
-      // 外部キー制約を一時的に無効化
-      await db.execAsync('PRAGMA foreign_keys = OFF');
+    const dbName = getDatabaseName();
+    console.log(`🗑️  Force deleting database: ${dbName}`);
 
-      // 全テーブル一覧を取得
-      const tables = await db.getAllAsync<{ name: string }>(
-        `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`
-      );
+    // SQLiteのdeleteAsync APIを使用（ファイルシステムに直接アクセスせず削除）
+    await SQLite.deleteDatabaseAsync(dbName);
 
-      // 全テーブルを削除
-      for (const table of tables) {
-        console.log(`  Dropping table: ${table.name}`);
-        await db.execAsync(`DROP TABLE IF EXISTS ${table.name}`);
-      }
-
-      // 外部キー制約を再度有効化
-      await db.execAsync('PRAGMA foreign_keys = ON');
-    });
-
-    console.log('✅ Database cleared successfully');
-    console.log('💡 Next app startup will run all migrations from scratch');
-  } catch (error) {
-    console.error('❌ Failed to clear database:', error);
-    throw error;
+    console.log('✅ Database file force-deleted successfully');
+  } catch (error: any) {
+    // データベースが存在しない場合もエラーになるが、問題ない
+    if (error?.message?.includes('not found') || error?.message?.includes('does not exist')) {
+      console.log('ℹ️  Database file does not exist, nothing to delete');
+    } else {
+      console.warn('⚠️  Failed to force-delete database (continuing anyway):', error);
+    }
   }
 }
 
@@ -96,22 +90,4 @@ export async function inspectDatabase(): Promise<void> {
     console.error('❌ Failed to inspect database:', error);
     throw error;
   }
-}
-
-/**
- * 開発用: データベースをクリアしてマイグレーションを再実行
- */
-export async function resetDatabase(): Promise<void> {
-  if (!__DEV__) {
-    console.warn('resetDatabase() is only available in development mode');
-    return;
-  }
-
-  console.log('🔄 Resetting database...');
-
-  await clearDatabase();
-
-  // マイグレーションは次回のアプリ起動時に自動実行される
-  console.log('✅ Database reset complete');
-  console.log('💡 Restart the app to apply all migrations');
 }

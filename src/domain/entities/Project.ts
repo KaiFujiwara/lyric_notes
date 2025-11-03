@@ -1,4 +1,5 @@
 import { ProjectTitle } from '../valueObjects/ProjectTitle';
+import * as Crypto from 'expo-crypto';
 
 export class Project {
   constructor(
@@ -17,7 +18,7 @@ export class Project {
     const validatedTitle = ProjectTitle.create(title);
     const now = new Date();
     return new Project(
-      crypto.randomUUID(),
+      Crypto.randomUUID(),
       validatedTitle.value,
       folderId,
       genreId,

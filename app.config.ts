@@ -18,7 +18,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug: 'lyrics_notes',
   version: '1.0.0',
   orientation: 'portrait',
-  icon: './assets/images/icon.png',
   scheme: 'lyricsnotes',
   userInterfaceStyle: 'automatic',
   ios: {
